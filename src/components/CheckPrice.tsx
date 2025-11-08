@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { getFloorPrice, stroopsToXLM, scValToNumber } from '../utils/contractInteraction';
+import { getFloorPrice, stroopsToXLM, scValToBigInt } from '../utils/contractInteraction';
 
 export const CheckPrice = () => {
   const [loading, setLoading] = useState(false);
@@ -15,7 +15,7 @@ export const CheckPrice = () => {
       const result = await getFloorPrice();
       
       if (result.success && result.data) {
-        const priceInStroops = scValToNumber(result.data);
+        const priceInStroops = scValToBigInt(result.data);
         const priceInXLM = stroopsToXLM(priceInStroops);
         setPrice(priceInXLM);
         setMessage({

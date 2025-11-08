@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useFreighter } from '../hooks/useFreighter';
-import { mintNFT } from '../utils/contractInteraction';
+import { mintNFT, scValToNumber } from '../utils/contractInteraction';
 
 export const MintNFT = () => {
   const { publicKey, signTransaction } = useFreighter();
@@ -20,9 +20,17 @@ export const MintNFT = () => {
       const result = await mintNFT(publicKey, name, uri, signTransaction);
       
       if (result.success) {
+        let tokenId = 'Check your wallet';
+        if (result.data) {
+          try {
+            tokenId = String(scValToNumber(result.data));
+          } catch (e) {
+            console.error('Error parsing token ID:', e);
+          }
+        }
         setMessage({
           type: 'success',
-          text: `NFT minted successfully! Token ID: ${result.data ? result.data : 'Check your wallet'}`
+          text: `NFT minted successfully! Token ID: ${tokenId}`
         });
         
         // Reset form

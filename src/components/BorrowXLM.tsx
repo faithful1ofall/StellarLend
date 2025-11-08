@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useFreighter } from '../hooks/useFreighter';
-import { borrowXLM, stroopsToXLM } from '../utils/contractInteraction';
+import { borrowXLM, stroopsToXLM, scValToBigInt } from '../utils/contractInteraction';
 
 export const BorrowXLM = () => {
   const { publicKey, signTransaction } = useFreighter();
@@ -19,7 +19,15 @@ export const BorrowXLM = () => {
       const result = await borrowXLM(publicKey, parseInt(nftId), signTransaction);
       
       if (result.success) {
-        const borrowedAmount = result.data ? stroopsToXLM(result.data) : 'Unknown';
+        let borrowedAmount = 'Unknown';
+        if (result.data) {
+          try {
+            const amountInStroops = scValToBigInt(result.data);
+            borrowedAmount = stroopsToXLM(amountInStroops);
+          } catch (e) {
+            console.error('Error parsing borrow amount:', e);
+          }
+        }
         setMessage({
           type: 'success',
           text: `Successfully borrowed ${borrowedAmount} XLM! Your NFT #${nftId} is now held as collateral.`

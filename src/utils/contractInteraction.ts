@@ -151,10 +151,18 @@ export function stringToScVal(str: string): StellarSdk.xdr.ScVal {
 }
 
 /**
- * Helper to convert number to ScVal
+ * Helper to convert number to ScVal (u32)
  */
 export function numberToScVal(num: number): StellarSdk.xdr.ScVal {
   return StellarSdk.nativeToScVal(num, { type: 'u32' });
+}
+
+/**
+ * Helper to convert number to ScVal (i128 for amounts)
+ */
+export function amountToScVal(amount: number | bigint): StellarSdk.xdr.ScVal {
+  const bigIntAmount = typeof amount === 'bigint' ? amount : BigInt(amount);
+  return StellarSdk.nativeToScVal(bigIntAmount, { type: 'i128' });
 }
 
 /**
@@ -165,31 +173,49 @@ export function addressToScVal(address: string): StellarSdk.xdr.ScVal {
 }
 
 /**
- * Helper to parse ScVal to number
+ * Helper to parse ScVal to number (for u32, u64, i32, i64)
  */
 export function scValToNumber(scVal: StellarSdk.xdr.ScVal): number {
-  return StellarSdk.scValToNative(scVal);
+  const native = StellarSdk.scValToNative(scVal);
+  // Handle BigInt conversion
+  if (typeof native === 'bigint') {
+    return Number(native);
+  }
+  return native;
+}
+
+/**
+ * Helper to parse ScVal to BigInt (for i128, u128)
+ */
+export function scValToBigInt(scVal: StellarSdk.xdr.ScVal): bigint {
+  const native = StellarSdk.scValToNative(scVal);
+  if (typeof native === 'bigint') {
+    return native;
+  }
+  return BigInt(native);
 }
 
 /**
  * Helper to parse ScVal to string
  */
 export function scValToString(scVal: StellarSdk.xdr.ScVal): string {
-  return StellarSdk.scValToNative(scVal);
+  const native = StellarSdk.scValToNative(scVal);
+  return String(native);
 }
 
 /**
  * Helper to format stroops to XLM
  */
-export function stroopsToXLM(stroops: number): string {
-  return (stroops / 10_000_000).toFixed(7);
+export function stroopsToXLM(stroops: number | bigint): string {
+  const stroopsNum = typeof stroops === 'bigint' ? Number(stroops) : stroops;
+  return (stroopsNum / 10_000_000).toFixed(7);
 }
 
 /**
  * Helper to format XLM to stroops
  */
-export function xlmToStroops(xlm: number): number {
-  return Math.floor(xlm * 10_000_000);
+export function xlmToStroops(xlm: number): bigint {
+  return BigInt(Math.floor(xlm * 10_000_000));
 }
 
 // Contract-specific functions

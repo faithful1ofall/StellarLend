@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { calculateBorrowAmount, stroopsToXLM, scValToNumber } from '../utils/contractInteraction';
+import { calculateBorrowAmount, stroopsToXLM, scValToBigInt } from '../utils/contractInteraction';
 
 export const CalculateBorrow = () => {
   const [nftId, setNftId] = useState('');
@@ -19,7 +19,7 @@ export const CalculateBorrow = () => {
       const result = await calculateBorrowAmount(parseInt(nftId));
       
       if (result.success && result.data) {
-        const amountInStroops = scValToNumber(result.data);
+        const amountInStroops = scValToBigInt(result.data);
         const amountInXLM = stroopsToXLM(amountInStroops);
         setBorrowAmount(amountInXLM);
         setMessage({
