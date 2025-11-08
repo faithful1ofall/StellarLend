@@ -1,5 +1,12 @@
 import './App.css';
 import { WalletConnect } from './components/WalletConnect';
+import { MintNFT } from './components/MintNFT';
+import { BorrowXLM } from './components/BorrowXLM';
+import { RepayLoan } from './components/RepayLoan';
+import { CheckPrice } from './components/CheckPrice';
+import { LoanStatus } from './components/LoanStatus';
+import { LiquidationCheck } from './components/LiquidationCheck';
+import { CalculateBorrow } from './components/CalculateBorrow';
 import { useFreighter } from './hooks/useFreighter';
 import { CONTRACTS } from './config';
 
@@ -9,111 +16,185 @@ function App() {
   return (
     <div className="app">
       <header className="header">
-        <h1>🌟 StellarLend</h1>
-        <WalletConnect />
+        <div className="header-content">
+          <div className="logo">
+            <span className="logo-icon">✨</span>
+            <h1>StellarLend</h1>
+          </div>
+          <WalletConnect />
+        </div>
       </header>
 
       {!isConnected ? (
-        <div className="card">
-          <h2>Welcome to StellarLend</h2>
-          <p style={{ marginBottom: '20px', color: '#6b7280' }}>
-            StellarLend is an NFT-collateralized lending platform on Stellar. 
-            Connect your Freighter wallet to get started!
-          </p>
-          <div className="info-box">
-            <p><strong>Features:</strong></p>
-            <ul style={{ marginLeft: '20px', marginTop: '10px' }}>
-              <li>Mint sample NFTs</li>
-              <li>Use NFTs as collateral to borrow XLM</li>
-              <li>70% Loan-to-Value ratio</li>
-              <li>Repay loans to reclaim your NFTs</li>
-              <li>Automatic liquidation protection</li>
-            </ul>
-          </div>
-          <div className="info-box" style={{ marginTop: '20px' }}>
-            <p><strong>How to Use:</strong></p>
-            <ol style={{ marginLeft: '20px', marginTop: '10px' }}>
-              <li>Install Freighter wallet extension</li>
-              <li>Switch to Stellar Testnet</li>
-              <li>Fund your account from the testnet faucet</li>
-              <li>Connect your wallet above</li>
-              <li>Use Stellar CLI to interact with contracts</li>
-            </ol>
-          </div>
-        </div>
+        <>
+          <section className="hero">
+            <h2>
+              Unlock Liquidity with <span className="gradient-text">NFT Collateral</span>
+            </h2>
+            <p>
+              The first decentralized NFT-collateralized lending platform on Stellar. 
+              Borrow XLM instantly using your NFTs as collateral with transparent, 
+              on-chain pricing and automated liquidation protection.
+            </p>
+            <WalletConnect />
+          </section>
+
+          <section className="features">
+            <h3>Why Choose StellarLend?</h3>
+            <div className="features-grid">
+              <div className="feature-card">
+                <div className="feature-icon">🎨</div>
+                <h4>NFT Collateral</h4>
+                <p>
+                  Use your NFTs as collateral to unlock instant liquidity. 
+                  Keep your assets while accessing the funds you need.
+                </p>
+              </div>
+              <div className="feature-card">
+                <div className="feature-icon">⚡</div>
+                <h4>Instant Loans</h4>
+                <p>
+                  Get up to 70% of your NFT's floor price in XLM instantly. 
+                  No credit checks, no waiting periods.
+                </p>
+              </div>
+              <div className="feature-card">
+                <div className="feature-icon">🔒</div>
+                <h4>Secure & Transparent</h4>
+                <p>
+                  Built on Stellar smart contracts with on-chain oracle pricing. 
+                  Your assets are always protected.
+                </p>
+              </div>
+              <div className="feature-card">
+                <div className="feature-icon">💎</div>
+                <h4>Fair Pricing</h4>
+                <p>
+                  Oracle-based floor price discovery ensures you get fair 
+                  market value for your NFT collateral.
+                </p>
+              </div>
+              <div className="feature-card">
+                <div className="feature-icon">🛡️</div>
+                <h4>Liquidation Protection</h4>
+                <p>
+                  80% liquidation threshold gives you breathing room. 
+                  Monitor your loan health in real-time.
+                </p>
+              </div>
+              <div className="feature-card">
+                <div className="feature-icon">🚀</div>
+                <h4>Built on Stellar</h4>
+                <p>
+                  Lightning-fast transactions with minimal fees. 
+                  Experience DeFi the way it should be.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section className="stats-section">
+            <div className="stats-grid">
+              <div className="stat-card">
+                <h3>Loan-to-Value</h3>
+                <p>70%</p>
+              </div>
+              <div className="stat-card">
+                <h3>Liquidation Threshold</h3>
+                <p>80%</p>
+              </div>
+              <div className="stat-card">
+                <h3>Network</h3>
+                <p>Stellar</p>
+              </div>
+              <div className="stat-card">
+                <h3>Transaction Speed</h3>
+                <p>~5s</p>
+              </div>
+            </div>
+          </section>
+
+          <footer className="footer">
+            <p>Built with Scaffold Stellar | Testnet Deployment</p>
+            <p>Network: Stellar Testnet | Powered by Soroban Smart Contracts</p>
+          </footer>
+        </>
       ) : (
         <div className="main-content">
-          <div className="card">
-            <h2>Contract Addresses</h2>
-            <div className="info-box">
-              <p><strong>NFT Contract:</strong></p>
-              <code style={{ fontSize: '11px', wordBreak: 'break-all' }}>{CONTRACTS.NFT_CONTRACT}</code>
+          <div className="stats-grid">
+            <div className="stat-card">
+              <h3>Loan-to-Value Ratio</h3>
+              <p>70%</p>
             </div>
-            <div className="info-box">
-              <p><strong>Oracle Contract:</strong></p>
-              <code style={{ fontSize: '11px', wordBreak: 'break-all' }}>{CONTRACTS.ORACLE_CONTRACT}</code>
+            <div className="stat-card">
+              <h3>Liquidation Threshold</h3>
+              <p>80%</p>
             </div>
-            <div className="info-box">
-              <p><strong>Vault Contract:</strong></p>
-              <code style={{ fontSize: '11px', wordBreak: 'break-all' }}>{CONTRACTS.VAULT_CONTRACT}</code>
-            </div>
-          </div>
-
-          <div className="card">
-            <h2>CLI Commands</h2>
-            <div className="info-box">
-              <p><strong>Mint NFT:</strong></p>
-              <code style={{ fontSize: '10px', display: 'block', marginTop: '5px' }}>
-                stellar contract invoke --id {CONTRACTS.NFT_CONTRACT} --source YOUR_KEY --network testnet -- mint --to YOUR_ADDRESS --name "My NFT" --uri "ipfs://..."
-              </code>
-            </div>
-            <div className="info-box">
-              <p><strong>Check Floor Price:</strong></p>
-              <code style={{ fontSize: '10px', display: 'block', marginTop: '5px' }}>
-                stellar contract invoke --id {CONTRACTS.ORACLE_CONTRACT} --network testnet -- get_price
-              </code>
-            </div>
-            <div className="info-box">
-              <p><strong>Borrow XLM:</strong></p>
-              <code style={{ fontSize: '10px', display: 'block', marginTop: '5px' }}>
-                stellar contract invoke --id {CONTRACTS.VAULT_CONTRACT} --source YOUR_KEY --network testnet -- deposit_and_borrow --borrower YOUR_ADDRESS --nft_id 0
-              </code>
+            <div className="stat-card">
+              <h3>Network</h3>
+              <p>Testnet</p>
             </div>
           </div>
 
-          <div className="card">
-            <h2>Documentation</h2>
-            <p style={{ marginBottom: '15px', color: '#6b7280' }}>
-              For detailed usage instructions, see the README.md file in the repository.
-            </p>
-            <a 
-              href="https://github.com/faithful1ofall/StellarLend" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              style={{ 
-                color: '#667eea', 
-                textDecoration: 'none',
-                fontWeight: 'bold'
-              }}
-            >
-              View on GitHub →
-            </a>
+          <div className="dashboard-grid">
+            <div className="card">
+              <h2>
+                <span className="card-icon">📋</span>
+                Contract Addresses
+              </h2>
+              <div className="info-box">
+                <p><strong>NFT Contract</strong></p>
+                <code>{CONTRACTS.NFT_CONTRACT}</code>
+              </div>
+              <div className="info-box">
+                <p><strong>Oracle Contract</strong></p>
+                <code>{CONTRACTS.ORACLE_CONTRACT}</code>
+              </div>
+              <div className="info-box">
+                <p><strong>Vault Contract</strong></p>
+                <code>{CONTRACTS.VAULT_CONTRACT}</code>
+              </div>
+            </div>
+
+            <MintNFT />
+            <CheckPrice />
+            <CalculateBorrow />
+            <BorrowXLM />
+            <RepayLoan />
+            <LoanStatus />
+            <LiquidationCheck />
+
+            <div className="card">
+              <h2>
+                <span className="card-icon">📚</span>
+                Documentation
+              </h2>
+              <p style={{ color: '#94a3b8', marginBottom: '20px', fontSize: '14px' }}>
+                For detailed usage instructions, architecture details, and deployment guides, 
+                check out the project documentation.
+              </p>
+              <a 
+                href="https://github.com/faithful1ofall/StellarLend" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                style={{ 
+                  color: '#a855f7', 
+                  textDecoration: 'none',
+                  fontWeight: 'bold',
+                  fontSize: '16px'
+                }}
+              >
+                View on GitHub →
+              </a>
+            </div>
           </div>
+
+          <footer className="footer">
+            <p>Built with Scaffold Stellar | Testnet Deployment</p>
+            <p>Network: Stellar Testnet | Powered by Soroban Smart Contracts</p>
+          </footer>
         </div>
       )}
-
-      <footer style={{ 
-        textAlign: 'center', 
-        marginTop: '40px', 
-        padding: '20px',
-        color: 'white',
-        opacity: 0.8
-      }}>
-        <p>Built with Scaffold Stellar | Testnet Deployment</p>
-        <p style={{ fontSize: '12px', marginTop: '10px' }}>
-          Network: Stellar Testnet | Framework: Scaffold Stellar
-        </p>
-      </footer>
     </div>
   );
 }
