@@ -1,0 +1,13 @@
+export const CONTRACTS = {
+  NFT_CONTRACT: 'CB3PPOG4M55C2BJNMSZJQESLBJ2EM5JGJMNDX54JC4YJB33XK53NYRJ7',
+  ORACLE_CONTRACT: 'CCWPINGCANTP5BXIXDVYXIMLXVPQA55NHADDYFPA25VMYPNLDUJCIDZ3',
+  VAULT_CONTRACT: 'CANZYX3QB2ATSK7WP5YODMQP24WZ4HO4YROCKNZMPIMXEKA2TDIBLUHO',
+};
+
+export const NETWORK = {
+  networkPassphrase: 'Test SDF Network ; September 2015',
+  rpcUrl: 'https://soroban-testnet.stellar.org',
+};
+
+export const LTV_RATIO = 70; // 70% loan-to-value
+export const LIQUIDATION_THRESHOLD = 80; // 80% collateralization required

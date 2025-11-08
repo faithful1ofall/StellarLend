@@ -1,0 +1,25 @@
+[workspace]
+resolver = "2"
+
+members = [
+    "contracts/nft_contract",
+    "contracts/oracle_contract",
+    "contracts/vault_contract",
+]
+
+[workspace.dependencies]
+soroban-sdk = "23.0.0"
+
+[profile.release]
+opt-level = "z"
+overflow-checks = true
+debug = 0
+strip = "symbols"
+debug-assertions = false
+panic = "abort"
+codegen-units = 1
+lto = true
+
+[profile.release-with-logs]
+inherits = "release"
+debug-assertions = true
