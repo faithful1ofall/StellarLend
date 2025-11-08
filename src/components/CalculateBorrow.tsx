@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { CONTRACTS } from '../config';
+import { calculateBorrowAmount, stroopsToXLM, scValToNumber } from '../utils/contractInteraction';
 
 export const CalculateBorrow = () => {
   const [nftId, setNftId] = useState('');
   const [loading, setLoading] = useState(false);
+  const [borrowAmount, setBorrowAmount] = useState<string | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const handleCalculate = async (e: React.FormEvent) => {
@@ -12,16 +13,29 @@ export const CalculateBorrow = () => {
 
     setLoading(true);
     setMessage(null);
+    setBorrowAmount(null);
 
     try {
-      setMessage({
-        type: 'success',
-        text: `To calculate how much you can borrow against your NFT, run this command:\n\nstellar contract invoke --id ${CONTRACTS.VAULT_CONTRACT} --network testnet -- calculate_borrow_amount --nft_id ${nftId}`
-      });
+      const result = await calculateBorrowAmount(parseInt(nftId));
+      
+      if (result.success && result.data) {
+        const amountInStroops = scValToNumber(result.data);
+        const amountInXLM = stroopsToXLM(amountInStroops);
+        setBorrowAmount(amountInXLM);
+        setMessage({
+          type: 'success',
+          text: `You can borrow up to ${amountInXLM} XLM using NFT #${nftId} as collateral`
+        });
+      } else {
+        setMessage({
+          type: 'error',
+          text: result.message || 'Failed to calculate borrow amount'
+        });
+      }
     } catch (error: any) {
       setMessage({
         type: 'error',
-        text: error.message || 'Failed to generate calculation command'
+        text: error.message || 'Failed to calculate borrow amount'
       });
     } finally {
       setLoading(false);
@@ -35,11 +49,16 @@ export const CalculateBorrow = () => {
         Calculate Borrow Amount
       </h2>
       
+      {borrowAmount && (
+        <div className="stat-card" style={{ marginBottom: '20px' }}>
+          <h3>Maximum Borrow Amount</h3>
+          <p>{borrowAmount} XLM</p>
+        </div>
+      )}
+      
       {message && (
         <div className={message.type === 'success' ? 'success' : 'error'}>
-          <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', fontSize: '12px' }}>
-            {message.text}
-          </pre>
+          {message.text}
         </div>
       )}
 
@@ -53,11 +72,12 @@ export const CalculateBorrow = () => {
             placeholder="0"
             min="0"
             required
+            disabled={loading}
           />
         </div>
 
         <button type="submit" disabled={loading}>
-          {loading ? 'Generating...' : 'Generate Calculate Command'}
+          {loading ? 'Calculating...' : 'Calculate Borrow Amount'}
         </button>
       </form>
 
@@ -65,8 +85,8 @@ export const CalculateBorrow = () => {
         <p><strong>Calculation Details:</strong></p>
         <p>• Based on current oracle floor price</p>
         <p>• Maximum borrow = Floor Price × 70%</p>
-        <p>• Amount returned in stroops</p>
-        <p>• To convert: divide by 10,000,000 for XLM</p>
+        <p>• This is the maximum amount you can borrow</p>
+        <p>• Actual amount may vary based on market conditions</p>
       </div>
     </div>
   );

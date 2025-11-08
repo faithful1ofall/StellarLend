@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useFreighter } from '../hooks/useFreighter';
-import { CONTRACTS } from '../config';
+import { mintNFT } from '../utils/contractInteraction';
 
 export const MintNFT = () => {
-  const { publicKey } = useFreighter();
+  const { publicKey, signTransaction } = useFreighter();
   const [name, setName] = useState('');
   const [uri, setUri] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,18 +17,27 @@ export const MintNFT = () => {
     setMessage(null);
 
     try {
-      setMessage({
-        type: 'success',
-        text: `To mint your NFT, run this command in your terminal:\n\nstellar contract invoke --id ${CONTRACTS.NFT_CONTRACT} --source YOUR_KEY --network testnet -- mint --to ${publicKey} --name "${name}" --uri "${uri}"`
-      });
+      const result = await mintNFT(publicKey, name, uri, signTransaction);
       
-      // Reset form
-      setName('');
-      setUri('');
+      if (result.success) {
+        setMessage({
+          type: 'success',
+          text: `NFT minted successfully! Token ID: ${result.data ? result.data : 'Check your wallet'}`
+        });
+        
+        // Reset form
+        setName('');
+        setUri('');
+      } else {
+        setMessage({
+          type: 'error',
+          text: result.message
+        });
+      }
     } catch (error: any) {
       setMessage({
         type: 'error',
-        text: error.message || 'Failed to generate mint command'
+        text: error.message || 'Failed to mint NFT'
       });
     } finally {
       setLoading(false);
@@ -44,9 +53,7 @@ export const MintNFT = () => {
       
       {message && (
         <div className={message.type === 'success' ? 'success' : 'error'}>
-          <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', fontSize: '12px' }}>
-            {message.text}
-          </pre>
+          {message.text}
         </div>
       )}
 
@@ -59,6 +66,7 @@ export const MintNFT = () => {
             onChange={(e) => setName(e.target.value)}
             placeholder="My Awesome NFT"
             required
+            disabled={loading}
           />
         </div>
 
@@ -70,16 +78,21 @@ export const MintNFT = () => {
             onChange={(e) => setUri(e.target.value)}
             placeholder="ipfs://... or https://..."
             required
+            disabled={loading}
           />
         </div>
 
         <button type="submit" disabled={loading || !publicKey}>
-          {loading ? 'Generating...' : 'Generate Mint Command'}
+          {loading ? 'Minting...' : 'Mint NFT'}
         </button>
       </form>
 
       <div className="info-box" style={{ marginTop: '20px' }}>
-        <p><strong>Note:</strong> Copy the generated command and run it in your terminal with the Stellar CLI installed.</p>
+        <p><strong>How it works:</strong></p>
+        <p>• Enter your NFT details above</p>
+        <p>• Click "Mint NFT" to create your token</p>
+        <p>• Confirm the transaction in your wallet</p>
+        <p>• Your NFT will be minted on Stellar testnet</p>
       </div>
     </div>
   );

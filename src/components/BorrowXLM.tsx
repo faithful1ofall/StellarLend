@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useFreighter } from '../hooks/useFreighter';
-import { CONTRACTS } from '../config';
+import { borrowXLM, stroopsToXLM } from '../utils/contractInteraction';
 
 export const BorrowXLM = () => {
-  const { publicKey } = useFreighter();
+  const { publicKey, signTransaction } = useFreighter();
   const [nftId, setNftId] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -16,16 +16,26 @@ export const BorrowXLM = () => {
     setMessage(null);
 
     try {
-      setMessage({
-        type: 'success',
-        text: `To borrow XLM using your NFT as collateral, run this command:\n\nstellar contract invoke --id ${CONTRACTS.VAULT_CONTRACT} --source YOUR_KEY --network testnet -- deposit_and_borrow --borrower ${publicKey} --nft_id ${nftId}`
-      });
+      const result = await borrowXLM(publicKey, parseInt(nftId), signTransaction);
       
-      setNftId('');
+      if (result.success) {
+        const borrowedAmount = result.data ? stroopsToXLM(result.data) : 'Unknown';
+        setMessage({
+          type: 'success',
+          text: `Successfully borrowed ${borrowedAmount} XLM! Your NFT #${nftId} is now held as collateral.`
+        });
+        
+        setNftId('');
+      } else {
+        setMessage({
+          type: 'error',
+          text: result.message
+        });
+      }
     } catch (error: any) {
       setMessage({
         type: 'error',
-        text: error.message || 'Failed to generate borrow command'
+        text: error.message || 'Failed to borrow XLM'
       });
     } finally {
       setLoading(false);
@@ -41,9 +51,7 @@ export const BorrowXLM = () => {
       
       {message && (
         <div className={message.type === 'success' ? 'success' : 'error'}>
-          <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', fontSize: '12px' }}>
-            {message.text}
-          </pre>
+          {message.text}
         </div>
       )}
 
@@ -57,11 +65,12 @@ export const BorrowXLM = () => {
             placeholder="0"
             min="0"
             required
+            disabled={loading}
           />
         </div>
 
         <button type="submit" disabled={loading || !publicKey}>
-          {loading ? 'Generating...' : 'Generate Borrow Command'}
+          {loading ? 'Processing...' : 'Borrow XLM'}
         </button>
       </form>
 
@@ -70,6 +79,7 @@ export const BorrowXLM = () => {
         <p>• Loan-to-Value: 70% of NFT floor price</p>
         <p>• Liquidation Threshold: 80% collateralization</p>
         <p>• Your NFT will be held as collateral until repayment</p>
+        <p>• Confirm the transaction in your wallet to proceed</p>
       </div>
     </div>
   );

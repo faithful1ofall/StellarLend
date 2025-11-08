@@ -1,9 +1,19 @@
 import { useState } from 'react';
-import { CONTRACTS } from '../config';
+import { getLoanDetails } from '../utils/contractInteraction';
+
+interface LoanData {
+  borrower: string;
+  nftId: number;
+  borrowedAmount: string;
+  collateralValue: string;
+  timestamp: number;
+  isActive: boolean;
+}
 
 export const LoanStatus = () => {
   const [nftId, setNftId] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loanData, setLoanData] = useState<LoanData | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const handleCheckStatus = async (e: React.FormEvent) => {
@@ -12,16 +22,32 @@ export const LoanStatus = () => {
 
     setLoading(true);
     setMessage(null);
+    setLoanData(null);
 
     try {
-      setMessage({
-        type: 'success',
-        text: `To check the status of your loan, run this command:\n\nstellar contract invoke --id ${CONTRACTS.VAULT_CONTRACT} --network testnet -- get_loan --nft_id ${nftId}`
-      });
+      const result = await getLoanDetails(parseInt(nftId));
+      
+      if (result.success && result.data) {
+        // Parse the loan data from ScVal
+        // Note: This is a simplified parsing - actual implementation may need adjustment
+        // based on the exact structure returned by the contract
+        setMessage({
+          type: 'success',
+          text: 'Loan details retrieved successfully!'
+        });
+        
+        // You would parse the actual loan data here
+        // For now, showing a success message
+      } else {
+        setMessage({
+          type: 'error',
+          text: result.message || 'No active loan found for this NFT ID'
+        });
+      }
     } catch (error: any) {
       setMessage({
         type: 'error',
-        text: error.message || 'Failed to generate status check command'
+        text: error.message || 'Failed to check loan status'
       });
     } finally {
       setLoading(false);
@@ -35,11 +61,20 @@ export const LoanStatus = () => {
         Check Loan Status
       </h2>
       
+      {loanData && (
+        <div className="loan-item">
+          <h3>Loan Details</h3>
+          <p><strong>NFT ID:</strong> {loanData.nftId}</p>
+          <p><strong>Borrowed Amount:</strong> {loanData.borrowedAmount} XLM</p>
+          <p><strong>Collateral Value:</strong> {loanData.collateralValue} XLM</p>
+          <p><strong>Status:</strong> {loanData.isActive ? 'Active' : 'Inactive'}</p>
+          <p><strong>Borrower:</strong> {loanData.borrower.slice(0, 8)}...{loanData.borrower.slice(-8)}</p>
+        </div>
+      )}
+      
       {message && (
         <div className={message.type === 'success' ? 'success' : 'error'}>
-          <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', fontSize: '12px' }}>
-            {message.text}
-          </pre>
+          {message.text}
         </div>
       )}
 
@@ -53,11 +88,12 @@ export const LoanStatus = () => {
             placeholder="0"
             min="0"
             required
+            disabled={loading}
           />
         </div>
 
         <button type="submit" disabled={loading}>
-          {loading ? 'Generating...' : 'Generate Status Check Command'}
+          {loading ? 'Checking...' : 'Check Loan Status'}
         </button>
       </form>
 

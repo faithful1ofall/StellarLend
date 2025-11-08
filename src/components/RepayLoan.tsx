@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useFreighter } from '../hooks/useFreighter';
-import { CONTRACTS } from '../config';
+import { repayLoan } from '../utils/contractInteraction';
 
 export const RepayLoan = () => {
-  const { publicKey } = useFreighter();
+  const { publicKey, signTransaction } = useFreighter();
   const [nftId, setNftId] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -16,16 +16,25 @@ export const RepayLoan = () => {
     setMessage(null);
 
     try {
-      setMessage({
-        type: 'success',
-        text: `To repay your loan and reclaim your NFT, run this command:\n\nstellar contract invoke --id ${CONTRACTS.VAULT_CONTRACT} --source YOUR_KEY --network testnet -- repay --borrower ${publicKey} --nft_id ${nftId}`
-      });
+      const result = await repayLoan(publicKey, parseInt(nftId), signTransaction);
       
-      setNftId('');
+      if (result.success) {
+        setMessage({
+          type: 'success',
+          text: `Loan repaid successfully! Your NFT #${nftId} has been returned to your wallet.`
+        });
+        
+        setNftId('');
+      } else {
+        setMessage({
+          type: 'error',
+          text: result.message
+        });
+      }
     } catch (error: any) {
       setMessage({
         type: 'error',
-        text: error.message || 'Failed to generate repay command'
+        text: error.message || 'Failed to repay loan'
       });
     } finally {
       setLoading(false);
@@ -41,9 +50,7 @@ export const RepayLoan = () => {
       
       {message && (
         <div className={message.type === 'success' ? 'success' : 'error'}>
-          <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', fontSize: '12px' }}>
-            {message.text}
-          </pre>
+          {message.text}
         </div>
       )}
 
@@ -57,11 +64,12 @@ export const RepayLoan = () => {
             placeholder="0"
             min="0"
             required
+            disabled={loading}
           />
         </div>
 
         <button type="submit" disabled={loading || !publicKey}>
-          {loading ? 'Generating...' : 'Generate Repay Command'}
+          {loading ? 'Processing...' : 'Repay Loan'}
         </button>
       </form>
 
@@ -70,6 +78,7 @@ export const RepayLoan = () => {
         <p>• You must repay the full borrowed amount</p>
         <p>• Your NFT will be returned immediately after repayment</p>
         <p>• Make sure you have sufficient XLM in your wallet</p>
+        <p>• Confirm the transaction in your wallet to proceed</p>
       </div>
     </div>
   );

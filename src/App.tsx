@@ -1,5 +1,6 @@
 import './App.css';
 import { WalletConnect } from './components/WalletConnect';
+import { Dashboard } from './components/Dashboard';
 import { MintNFT } from './components/MintNFT';
 import { BorrowXLM } from './components/BorrowXLM';
 import { RepayLoan } from './components/RepayLoan';
@@ -121,22 +122,18 @@ function App() {
         </>
       ) : (
         <div className="main-content">
-          <div className="stats-grid">
-            <div className="stat-card">
-              <h3>Loan-to-Value Ratio</h3>
-              <p>70%</p>
-            </div>
-            <div className="stat-card">
-              <h3>Liquidation Threshold</h3>
-              <p>80%</p>
-            </div>
-            <div className="stat-card">
-              <h3>Network</h3>
-              <p>Testnet</p>
-            </div>
-          </div>
+          <h2 style={{ 
+            color: '#fff', 
+            fontSize: '32px', 
+            marginBottom: '30px',
+            textAlign: 'center'
+          }}>
+            Welcome to Your <span className="gradient-text">Lending Dashboard</span>
+          </h2>
 
           <div className="dashboard-grid">
+            <Dashboard />
+            
             <div className="card">
               <h2>
                 <span className="card-icon">📋</span>
@@ -155,12 +152,50 @@ function App() {
                 <code>{CONTRACTS.VAULT_CONTRACT}</code>
               </div>
             </div>
+          </div>
 
+          <h3 style={{ 
+            color: '#fff', 
+            fontSize: '24px', 
+            marginTop: '50px',
+            marginBottom: '30px',
+            textAlign: 'center'
+          }}>
+            NFT Management
+          </h3>
+
+          <div className="dashboard-grid">
             <MintNFT />
             <CheckPrice />
+          </div>
+
+          <h3 style={{ 
+            color: '#fff', 
+            fontSize: '24px', 
+            marginTop: '50px',
+            marginBottom: '30px',
+            textAlign: 'center'
+          }}>
+            Lending Operations
+          </h3>
+
+          <div className="dashboard-grid">
             <CalculateBorrow />
             <BorrowXLM />
             <RepayLoan />
+          </div>
+
+          <h3 style={{ 
+            color: '#fff', 
+            fontSize: '24px', 
+            marginTop: '50px',
+            marginBottom: '30px',
+            textAlign: 'center'
+          }}>
+            Loan Monitoring
+          </h3>
+
+          <div className="dashboard-grid">
             <LoanStatus />
             <LiquidationCheck />
 
@@ -192,6 +227,9 @@ function App() {
           <footer className="footer">
             <p>Built with Scaffold Stellar | Testnet Deployment</p>
             <p>Network: Stellar Testnet | Powered by Soroban Smart Contracts</p>
+            <p style={{ marginTop: '10px', fontSize: '12px' }}>
+              All transactions are signed directly with your connected wallet
+            </p>
           </footer>
         </div>
       )}
