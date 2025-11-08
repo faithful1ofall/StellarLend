@@ -14,7 +14,7 @@ StellarLend is a decentralized NFT-collateralized lending platform built on the 
 - **70% LTV Ratio**: Borrow up to 70% of your NFT's floor price value
 - **Loan Repayment**: Repay loans to reclaim your NFTs
 - **Liquidation Protection**: Automatic liquidation when collateral value drops below threshold
-- **Modern UI**: Clean, responsive React interface with Freighter wallet integration
+- **Modern UI**: Clean, responsive React interface with Stellar Wallet Kit integration
 
 ## 🏗️ Architecture
 
@@ -68,7 +68,7 @@ Core lending logic - handles collateral, borrowing, repayment, and liquidation.
 - [Rust](https://www.rust-lang.org/tools/install) (1.91.0 or later)
 - [Node.js](https://nodejs.org/) (v18 or later)
 - [Stellar CLI](https://github.com/stellar/stellar-cli)
-- [Freighter Wallet](https://www.freighter.app/) browser extension
+- A Stellar wallet ([Freighter](https://www.freighter.app/), [xBull](https://xbull.app/), or other Stellar Wallet Kit compatible wallet)
 
 ### Installation
 
@@ -108,7 +108,7 @@ Navigate to `http://localhost:5173` and connect your Freighter wallet.
 ## 🎮 Usage
 
 ### 1. Connect Wallet
-Click "Connect Freighter" to connect your Stellar wallet. Make sure you're on the Testnet network.
+Click "Connect Wallet" to open the wallet selection modal. Choose your preferred wallet (Freighter, xBull, etc.) and approve the connection. Make sure you're on the Testnet network.
 
 ### 2. Mint an NFT
 - Enter a name and metadata URI for your NFT

@@ -1,5 +1,11 @@
 import { useState, useEffect } from 'react';
-import * as freighter from '@stellar/freighter-api';
+import { StellarWalletsKit, WalletNetwork, allowAllModules, FREIGHTER_ID } from '@creit.tech/stellar-wallets-kit';
+
+const kit = new StellarWalletsKit({
+  network: WalletNetwork.TESTNET,
+  selectedWalletId: FREIGHTER_ID,
+  modules: allowAllModules(),
+});
 
 export const useFreighter = () => {
   const [publicKey, setPublicKey] = useState<string | null>(null);
@@ -12,15 +18,13 @@ export const useFreighter = () => {
 
   const checkConnection = async () => {
     try {
-      const connected = await freighter.isConnected();
-      if (connected) {
-        const result = await freighter.default.getAddress();
-        if (result.address) {
-          setPublicKey(result.address);
-        }
+      const { address } = await kit.getAddress();
+      if (address) {
+        setPublicKey(address);
       }
     } catch (err) {
-      console.error('Error checking Freighter connection:', err);
+      // Not connected yet, ignore error
+      console.log('Wallet not connected yet');
     }
   };
 
@@ -28,15 +32,16 @@ export const useFreighter = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const result = await freighter.default.getAddress();
-      if (result.address) {
-        setPublicKey(result.address);
-      } else if (result.error) {
-        throw new Error(result.error);
-      }
+      await kit.openModal({
+        onWalletSelected: async (option) => {
+          kit.setWallet(option.id);
+          const { address } = await kit.getAddress();
+          setPublicKey(address);
+        }
+      });
     } catch (err: any) {
       setError(err.message || 'Failed to connect wallet');
-      console.error('Error connecting to Freighter:', err);
+      console.error('Error connecting wallet:', err);
     } finally {
       setIsLoading(false);
     }
@@ -46,6 +51,18 @@ export const useFreighter = () => {
     setPublicKey(null);
   };
 
+  const signTransaction = async (xdr: string, opts?: any) => {
+    try {
+      const { signedTxXdr } = await kit.signTransaction(xdr, {
+        networkPassphrase: opts?.networkPassphrase || 'Test SDF Network ; September 2015',
+      });
+      return signedTxXdr;
+    } catch (err) {
+      console.error('Error signing transaction:', err);
+      throw err;
+    }
+  };
+
   return {
     publicKey,
     isConnected: !!publicKey,
@@ -53,6 +70,7 @@ export const useFreighter = () => {
     error,
     connect,
     disconnect,
-    signTransaction: freighter.default.signTransaction,
+    signTransaction,
+    kit,
   };
 };

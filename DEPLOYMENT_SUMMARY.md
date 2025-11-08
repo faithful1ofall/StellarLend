@@ -55,10 +55,11 @@ All components of the StellarLend NFT-collateralized lending dApp have been succ
 ### Frontend (React + TypeScript)
 
 - **Framework**: Vite + React 18
-- **Wallet Integration**: Freighter API
+- **Wallet Integration**: Stellar Wallet Kit (supports Freighter, xBull, and more)
 - **Styling**: Custom CSS with gradient design
 - **Features**:
-  - Wallet connection
+  - Multi-wallet support via modal
+  - Wallet connection state management
   - Contract address display
   - CLI command examples
   - Responsive design
@@ -86,9 +87,11 @@ All components of the StellarLend NFT-collateralized lending dApp have been succ
 ### Frontend Testing
 
 ✅ **Wallet Connection**
-- Freighter integration working
+- Stellar Wallet Kit integration working
+- Multi-wallet support (Freighter, xBull, etc.)
 - Address display functional
 - Connect/disconnect flow smooth
+- Modal-based wallet selection
 
 ✅ **UI/UX**
 - Responsive design

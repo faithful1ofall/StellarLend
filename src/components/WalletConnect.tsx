@@ -1,27 +1,28 @@
-import React from 'react';
 import { useFreighter } from '../hooks/useFreighter';
 
-export const WalletConnect: React.FC = () => {
+export const WalletConnect = () => {
   const { publicKey, isConnected, isLoading, error, connect, disconnect } = useFreighter();
 
   const formatAddress = (address: string) => {
-    return `${address.slice(0, 4)}...${address.slice(-4)}`;
+    return `${address.slice(0, 6)}...${address.slice(-6)}`;
   };
 
   return (
     <div className="wallet-section">
-      {error && <div className="error">{error}</div>}
+      {error && <div className="error" style={{ marginBottom: '10px' }}>{error}</div>}
       
       {isConnected && publicKey ? (
         <>
-          <span className="wallet-address">{formatAddress(publicKey)}</span>
+          <span className="wallet-address" title={publicKey}>
+            {formatAddress(publicKey)}
+          </span>
           <button onClick={disconnect} className="secondary">
             Disconnect
           </button>
         </>
       ) : (
         <button onClick={connect} disabled={isLoading}>
-          {isLoading ? 'Connecting...' : 'Connect Freighter'}
+          {isLoading ? 'Connecting...' : 'Connect Wallet'}
         </button>
       )}
     </div>

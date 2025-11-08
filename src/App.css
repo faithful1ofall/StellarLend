@@ -287,6 +287,25 @@ button.danger:hover {
   font-weight: bold;
 }
 
+/* Stellar Wallet Kit Modal Styles */
+.swk-modal-overlay {
+  z-index: 9999 !important;
+}
+
+.swk-modal {
+  border-radius: 12px !important;
+}
+
+.swk-wallet-option {
+  border-radius: 8px !important;
+  transition: all 0.3s ease !important;
+}
+
+.swk-wallet-option:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3) !important;
+}
+
 @media (max-width: 768px) {
   .main-content {
     grid-template-columns: 1fr;
