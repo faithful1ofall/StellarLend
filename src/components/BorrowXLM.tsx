@@ -89,6 +89,14 @@ export const BorrowXLM = () => {
         <p>• Your NFT will be held as collateral until repayment</p>
         <p>• Confirm the transaction in your wallet to proceed</p>
       </div>
+
+      <div className="info-box" style={{ marginTop: '15px', background: 'rgba(245, 158, 11, 0.1)', borderColor: 'rgba(245, 158, 11, 0.3)' }}>
+        <p><strong>⚠️ Prerequisites:</strong></p>
+        <p>• You must own the NFT (check NFT ID)</p>
+        <p>• NFT must not be used as collateral already</p>
+        <p>• Vault must be funded with XLM (see info above)</p>
+        <p>• You need to approve the vault to transfer your NFT</p>
+      </div>
     </div>
   );
 };

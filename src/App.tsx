@@ -1,7 +1,9 @@
 import './App.css';
 import { WalletConnect } from './components/WalletConnect';
 import { Dashboard } from './components/Dashboard';
+import { VaultInfo } from './components/VaultInfo';
 import { MintNFT } from './components/MintNFT';
+import { ApproveNFT } from './components/ApproveNFT';
 import { BorrowXLM } from './components/BorrowXLM';
 import { RepayLoan } from './components/RepayLoan';
 import { CheckPrice } from './components/CheckPrice';
@@ -180,7 +182,9 @@ function App() {
           </h3>
 
           <div className="dashboard-grid">
+            <VaultInfo />
             <CalculateBorrow />
+            <ApproveNFT />
             <BorrowXLM />
             <RepayLoan />
           </div>

@@ -40,7 +40,25 @@ export async function buildAndSubmitTransaction(
     const simulated = await server.simulateTransaction(transaction);
     
     if (StellarSdk.rpc.Api.isSimulationError(simulated)) {
-      throw new Error(`Simulation failed: ${simulated.error}`);
+      const errorMsg = simulated.error;
+      
+      // Provide helpful error messages for common issues
+      if (errorMsg.includes('InvalidAction') || errorMsg.includes('re-entry')) {
+        throw new Error(
+          'The vault contract needs to be funded with XLM before it can lend. ' +
+          'Please contact the contract administrator to fund the vault.'
+        );
+      }
+      
+      if (errorMsg.includes('Not the NFT owner')) {
+        throw new Error('You do not own this NFT. Please check the NFT ID.');
+      }
+      
+      if (errorMsg.includes('already used as collateral')) {
+        throw new Error('This NFT is already being used as collateral for another loan.');
+      }
+      
+      throw new Error(`Transaction simulation failed: ${errorMsg}`);
     }
 
     // Prepare transaction with simulation results
